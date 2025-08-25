@@ -1,0 +1,17 @@
+<%
+  bytes = %w(bits bytes).include?(unit.to_s)
+  legend ||= false
+  data ||= []
+  labels ||= []
+  colors = data.collect { |datum| datum[:color] }
+
+  series_data = data.collect do |datum|
+    { name: datum[:key], data: datum[:values].collect { |d| [d[:x], d[:y]] } }
+  end
+
+  branded ||= I18n.t(:pie_colors)
+  branded_colors ||= branded.present? && branded.to_s !~ /translation missing/i ? branded.split(/[\s,]+/) : false
+%>
+
+<%= bar_chart(series_data, bytes: bytes, legend: legend, colors: branded_colors, stacked: true) if horizontal %>
+<%= column_chart(series_data, bytes: bytes, legend: legend, labels: false, colors: branded_colors, stacked: true) unless horizontal %>

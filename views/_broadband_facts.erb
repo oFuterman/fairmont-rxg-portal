@@ -1,0 +1,48 @@
+<%
+  attributes ||= {
+    price: number_to_currency(up.price),
+    max_devices: up.included_max_devices.nil? ? 'Unlimited' : up.included_max_devices,
+    expires: get_expiration_text(up),
+    recurring_method: up.recurring_method
+  }
+%>
+<div class="broadband-label" style="display: none">
+  <div class="d-flex justify-content-end">
+    <strong class="mb-0" style="display: none"><%= up.name %></strong>
+    <%= link_to("collapse this plan", "#", onClick: "toggleBBFlabel($(this))") %>
+  </div>
+  <div>
+    <h1 class="mb-0"><%= _("Broadband Facts") %></h1>
+    <hr class="thin" />
+    <h2 class="mb-1" style="font-weight: bold"><%= up.name %></h2>
+    <p class="mb-1"><%= _("Broadband Consumer Disclosure") %></p>
+    <hr class="thick">
+    <p><%= up.description&.html_safe %></p>
+    <hr class="medium">
+    <% attributes.each do |key, value| %>
+      <div class="row">
+        <div class="label"><%= key.to_s.titleize %></div>
+        <div class="value"><%= value %></div>
+      </div>
+    <% end %>
+    <hr class="thin">
+    <div class="d-flex justify-content-center">
+      <%= _(
+        'Read the <a href="#terms-modal" class="text-primary"
+        style="text-decoration:underline;"
+        data-bs-toggle="modal">Terms of Service</a>'
+      ).html_safe %>
+    </div>
+    <hr class="thick">
+    <p class="mb-0">
+      <%=_(
+        "Learn about the terms used on this label. Visit the
+        Federal Communications Commission’s Consumer Resource Center."
+      ) %>
+    </p>
+    <div class="d-flex justify-content-end">
+      <%= link_to("fcc.gov/consumer", "https://www.fcc.gov/broadbandlabels")%>
+    </div>
+    <p><%= "#{_('Unique Plan Identifier: ')} #{up.id}" %></p>
+  </div>
+</div>

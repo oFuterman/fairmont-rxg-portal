@@ -1,0 +1,38 @@
+<%= card_body do %>
+  <hgroup class="mb-4">
+    <%= card_title(class: 'text-danger') do %>
+      <%= _('You Are Quarantined!') %>
+    <% end # card_title %>
+    <%= card_subtitle do %>
+      <%= _('Online activity flagged as malicious!') %>
+    <% end # card_title %>
+  </hgroup>
+  <hgroup class="my-4">
+    <h4><%= @tgm.trigger_name %></h4>
+    <h5><%= @tgm.reason %></h5>
+  </hgroup>
+  <!-- Uncomment to allow the end-user to "Accept" the quarantine and delete the transient membership early -->
+  <!--
+  <% if @tel_count < 3 %>
+    <%= card_text do %>
+      <%= (_('This activity violates the %{link} for this network. Please close the software that generated this activity.') % { link: link_to(_('terms of service'), action: :tos) }).html_safe %>
+    <% end # card_text %>
+
+    <%= card_text do %>
+      <%= _('By clicking Accept below, you agree to abide by the terms of service.') %>
+    <% end # card_text %>
+
+    <%= button_to(_('Accept'), { action: :quarantine_trigger_accept, id: @tgm.id },
+      class: portal_submit_classes,
+      data: { disable_with: _('Please wait...') }) %>
+  <% else %>
+    <%= card_text do %>
+      <%= (n_('You have been quarantined <strong>%{count}</strong> time during the past 7 days.', 'You have been quarantined <strong>%{count}</strong> times during the past 7 days.', @tel_count) % { count: @tel_count } ).html_safe %>
+    <% end # card_text %>
+
+    <%= card_text do %>
+      <%= (_('You will need to wait <strong>%{time}</strong> before Internet access will be available.') % { time: distance_of_time_in_words(Time.now, @tgm.expires_at, highest_measures: 2) }).html_safe %>
+    <% end # card_text %>
+  <% end # if @ tel_count < 3 %>
+  -->
+<% end # card_body %>

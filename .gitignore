@@ -1,0 +1,22 @@
+# rXg Portal Git Repository .gitignore
+
+# Log files
+*.log
+*.tmp
+
+# Development files
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+
+# IDE files
+.vscode/
+.idea/
+
+# Backup files
+*.bak
+*.backup
+
+# System files
+.directory

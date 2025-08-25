@@ -1,0 +1,83 @@
+CustomEmail:
+- name: Fairmont Notification
+  from: portal
+  subject: Your Fairmont Residential Broadband service
+  body: |-
+    <%%
+      raise CustomEmail::DoNotSendError unless (account = Account.find_by(login: '%account.login%'))
+    %>
+    <%%=
+      mdu_config = CustomDataSet.find_by(name: 'fairmanage_residential_data') || CustomDataSet.new
+      ssid ||= "Fairmont".html_safe
+      signup_ssid ||= "Fairmont Signup".html_safe
+      phone ||= "1&nbsp;(800)&nbsp;111&#4321;4231".html_safe
+      portal_url ||= "http://rxg.local".html_safe
+      portal_url_label ||= "Fairmont Portal".html_safe
+      login = account.login.to_s
+      password = account.pre_shared_key.to_s
+
+      render :partial => 'portal/fair/residential_email_template', locals: {
+        login: login,
+        password: password,
+        salutation: [account.full_name, account.address1, account.address2, "#{account.city} #{account.region}, #{account.zip}"].compact,
+        order_info: [],
+        greeting: account.full_name,
+        portal_url: portal_url,
+        portal_url_label: portal_url_label,
+        phone: phone,
+        email_content: <<-EOF
+          <p>
+            Below is information needed to sign-up for your internet service. You may sign-up
+            for service on or after your move in date.
+          </p>
+
+          <ol>
+            <li>You must be on-site to activate your service.</li>
+            <li>Once on-site, please connect to the SSID "<b>#{signup_ssid}</b>" and use the login and password included in this email to access the portal.</li>
+            <li>Once logged in, please change and record your password and wireless pre-shared keys.</li>
+          </ol>
+
+          <p>
+            Please read the onscreen instructions carefully. After your account is created, your
+            service will be enabled on the SSID "<b>#{ssid}</b>". You should then "forget" the
+            "<b>#{signup_ssid}</b>" SSID from your device. Note that your service will be active between your
+            move in and move out dates, after you complete the steps above.
+          </p>
+        EOF
+      }
+    %>
+  send_to_account: true
+  attachment_format: xlsx
+  delivery_method: email
+BackendScript:
+- name: Fairmont
+  body: |
+    Account.where(bill_at: ..Time.now + 31.days).each do |account|
+      data = YAML::load(account.scratch.to_s) || {}
+      send_notification = false
+
+      # if data[:notice_1d].nil? && account.secret_answer.nil?
+      if data[:notice_1d].nil?
+        # send 1d notification
+        send_notification = data[:notice_1d] = true
+      end
+
+      if send_notification
+        account.scratch = data.to_yaml
+        account.save!
+        CustomEmail.find_by(name: 'Fairmont Notification').deliver_message(
+          account: account,
+          message_objs: [ account ]
+        )
+      end
+    end
+  output: ''
+
+NotificationAction:
+  - name: Send Fairmont email notifications
+    event_type: periodic
+    period: 2
+    period_unit: minutes
+    period_start: <%= Time.now.beginning_of_year %>
+    backend_scripts:
+    - Fairmont
