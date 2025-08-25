@@ -50,11 +50,6 @@
   <h2 class="welcome col-12 col-md-6 mx-auto d-flex <%= (@login_session && session[:no_please_wait]) ? 'justify-content-start' : 'justify-content-center' %>" data-dynamic="<%= dynamic %>">
     <%= welcome_greeting %>
   </h2>
-  <% if @logged_in && session[:no_please_wait] %>
-    <div class="col-12 col-md-6 d-flex justify-content-center justify-content-md-end">
-      <%= render_portal_partial "generate_api_key" %>
-    </div>
-  <% end %>
 </div>
 
 <% if dynamic %>

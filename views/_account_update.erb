@@ -2,10 +2,6 @@
   <%= card_body do %>
     <%= card_title(class: 'mb-5 d-flex justify-content-between') do %>
       <%= _('Account Profile') %>
-      <div>
-        <%= button(_('Edit Payment Method'), url: {action: 'payment_method_edit'}, link: true, context: :primary) %>
-        <%= render_portal_partial "generate_api_key" %>
-      </div>
     <% end # card_title %>
     <%= bootstrap_form_for( @current_account, as: :current_account, url: { action: :current_account_update },
       html: { name: 'account_form', id: 'account_form' }) do |f| %>

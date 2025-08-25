@@ -7,6 +7,18 @@ class Portal::FairController < PortalController
 # Methods defined here will be available as custom actions of this custom portal
 # controller.
 
+  # Override index to check if user needs password change
+  def index
+    if logged_in? && @current_account&.scratch&.include?('password_change_required')
+      # User still needs to change password, redirect to password portal
+      redirect_to_password_portal
+      return
+    end
+    
+    # Continue with normal index behavior
+    super
+  end
+
 
   # in this portal, instead of doing the normal quick purchase, we look up the
   # account by its note and give it to them if it matches.
@@ -128,6 +140,13 @@ class Portal::FairController < PortalController
     #   # consume the Coupon
     #   plans_coupon.destroy if !plans_coupon.unlimited_redemptions && (plans_coupon.redeemed_coupons.count >= plans_coupon.max_redemptions)
     # end
+
+  private
+
+  def redirect_to_password_portal
+    # Redirect to the password change portal
+    redirect_to "#{request.protocol}#{request.host}/portal/password/"
+  end
 
 end
 
