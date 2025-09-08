@@ -16,7 +16,7 @@ CustomEmail:
       login = account.login.to_s
       password = account.pre_shared_key.to_s
 
-      render :partial => 'portal/fair/residential_email_template', locals: {
+      render :partial => 'portal/tenant/residential_email_template', locals: {
         login: login,
         password: password,
         salutation: [account.full_name, account.address1, account.address2, "#{account.city} #{account.region}, #{account.zip}"].compact,
